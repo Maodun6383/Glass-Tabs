@@ -31,7 +31,15 @@ const ui = {
   next: $<HTMLButtonElement>('btn-next'),
   pos: $('pos'),
   info: $('song-info'),
+  log: $('log'),
 }
+
+function log(msg: string): void {
+  const t = new Date().toLocaleTimeString('tr-TR', { hour12: false })
+  ui.log.textContent = `${t}  ${msg}\n${ui.log.textContent ?? ''}`.slice(0, 8000)
+}
+window.addEventListener('error', (e) => log(`JS hata: ${e.message}`))
+window.addEventListener('unhandledrejection', (e) => log(`Promise hata: ${String(e.reason)}`))
 
 const frame = document.createElement('canvas')
 frame.width = CANVAS_W
@@ -46,7 +54,7 @@ let page = 0
 let fileKey = ''
 let settings: Settings = { showFingering: true, dimNext: true, tapAdvances: true }
 
-const glasses = new Glasses(onGlassesAction)
+const glasses = new Glasses(onGlassesAction, log)
 const store = new Store(glasses)
 
 function setStatus(text: string): void {
@@ -100,6 +108,7 @@ function selectTrack(index: number, startBar = 1): void {
   if (!score) return
   track = buildTrack(score, index)
   systems = layoutTrack(track, measure)
+  log(`parça ${index}: ${track.bars.length} ölçü → ${systems.length} satır`)
   const found = systems.findIndex((s) => s.lastBar >= startBar)
   page = found >= 0 ? found : 0
   ui.info.textContent = [track.title, track.artist, track.trackName].filter(Boolean).join(' · ')
@@ -111,9 +120,12 @@ function openScore(bytes: Uint8Array, name: string, trackIndex?: number, startBa
     score = loadScore(bytes)
   } catch (err) {
     setStatus(`Dosya okunamadı: ${(err as Error).message}`)
+    log(`dosya okunamadı: ${(err as Error).message}`)
+    void glasses.showMessage(`Dosya okunamadı:\n${name}`)
     return
   }
   fileKey = `${name}:${bytes.length}`
+  log(`dosya açıldı: ${name} (${bytes.length} B)`)
   ui.fileName.textContent = name
   const tracks = listTracks(score)
   ui.track.innerHTML = ''
@@ -129,8 +141,19 @@ function openScore(bytes: Uint8Array, name: string, trackIndex?: number, startBa
   selectTrack(ti, startBar)
 }
 
+async function openDemo(): Promise<void> {
+  try {
+    const res = await fetch(new URL('demo.gp', document.baseURI))
+    const bytes = new Uint8Array(await res.arrayBuffer())
+    openScore(bytes, 'demo.gp')
+  } catch (err) {
+    log(`demo yüklenemedi: ${err}`)
+  }
+}
+
 async function onFile(): Promise<void> {
   const f = ui.file.files?.[0]
+  log(`dosya seçici: ${f ? f.name : 'dosya yok'}`)
   if (!f) return
   const bytes = new Uint8Array(await f.arrayBuffer())
   openScore(bytes, f.name)
@@ -162,6 +185,7 @@ async function boot(): Promise<void> {
     selectTrack(Number(ui.track.value))
     void store.set('track', ui.track.value)
   }
+  $<HTMLButtonElement>('btn-demo').onclick = () => void openDemo()
   ui.prev.onclick = () => go(-1)
   ui.next.onclick = () => go(1)
 
@@ -179,7 +203,9 @@ async function boot(): Promise<void> {
   bindSettings()
 
   const last = await store.loadLastFile()
-  if (last) {
+  if (new URLSearchParams(location.search).has('demo')) {
+    await openDemo()
+  } else if (last) {
     const key = `${last.name}:${last.bytes.length}`
     const bar = Number((await store.get(`pos:${key}`)) || '1')
     const ti = Number((await store.get('track')) || NaN)

@@ -16,6 +16,7 @@
         Tab dosyası seç
         <input id="file" type="file" />
       </label>
+      <button id="btn-demo" class="demo-btn" type="button">Örnek parçayı aç</button>
       <p class="hint">Guitar Pro 3–7 (.gp3 .gp4 .gp5 .gpx .gp), MusicXML</p>
       <p id="file-name" class="file-name"></p>
       <p id="song-info" class="song-info"></p>
@@ -41,6 +42,11 @@
       <label class="row"><span>Dokununca ileri geç</span><input id="opt-tap" type="checkbox" /></label>
       <p class="hint">Gözlükte: aşağı kaydır = ileri, yukarı kaydır = geri, çift dokunma = çıkış.</p>
     </section>
+
+    <details class="card">
+      <summary>Teşhis kaydı</summary>
+      <pre id="log" class="log"></pre>
+    </details>
 
     <script type="module" src="/src/main.ts"></script>
   </body>
