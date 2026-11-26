@@ -1,0 +1,5 @@
+node_modules/
+dist/
+preview/
+*.ehpk
+.DS_Store

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Glass Tabs</title>
+  </head>
+  <body>
+    <header>
+      <h1>Glass Tabs</h1>
+      <p id="status" class="status">Başlatılıyor…</p>
+    </header>
+
+    <section class="card">
+      <label class="file-btn">
+        Tab dosyası seç
+        <input id="file" type="file" />
+      </label>
+      <p class="hint">Guitar Pro 3–7 (.gp3 .gp4 .gp5 .gpx .gp), MusicXML</p>
+      <p id="file-name" class="file-name"></p>
+      <p id="song-info" class="song-info"></p>
+      <label class="row">
+        <span>Enstrüman</span>
+        <select id="track"></select>
+      </label>
+    </section>
+
+    <section class="card">
+      <canvas id="preview" width="576" height="288"></canvas>
+      <div class="nav">
+        <button id="btn-prev" type="button">◀ Geri</button>
+        <span id="pos"></span>
+        <button id="btn-next" type="button">İleri ▶</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Ayarlar</h2>
+      <label class="row"><span>Sağ el parmakları (p i m a)</span><input id="opt-fingering" type="checkbox" /></label>
+      <label class="row"><span>Alttaki satırı soluk göster</span><input id="opt-dim" type="checkbox" /></label>
+      <label class="row"><span>Dokununca ileri geç</span><input id="opt-tap" type="checkbox" /></label>
+      <p class="hint">Gözlükte: aşağı kaydır = ileri, yukarı kaydır = geri, çift dokunma = çıkış.</p>
+    </section>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
