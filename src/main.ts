@@ -69,10 +69,24 @@ function draw(): void {
   })
   const p = ui.preview.getContext('2d')!
   p.drawImage(frame, 0, 0)
+  tintGreen(p)
   ui.pos.textContent = systems.length
     ? `Satır ${page + 1}/${systems.length} · Ölçü ${systems[page].firstBar}–${systems[page].lastBar}`
     : ''
   void glasses.pushFrame(frame)
+}
+
+/** Make the phone preview look like the G2 micro-LED: 16 shades of green. */
+function tintGreen(p: CanvasRenderingContext2D): void {
+  const img = p.getImageData(0, 0, CANVAS_W, CANVAS_H)
+  const d = img.data
+  for (let i = 0; i < d.length; i += 4) {
+    const g = Math.round(Math.round(d[i + 1] / 17) * 17)
+    d[i] = Math.round(g * 0.25)
+    d[i + 1] = g
+    d[i + 2] = Math.round(g * 0.35)
+  }
+  p.putImageData(img, 0, 0)
 }
 
 function go(delta: number): void {
