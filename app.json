@@ -9,6 +9,6 @@
   "description": "Open Guitar Pro (gp3–gp7) and MusicXML files on your phone and read the tablature on the Even G2 display. Swipe to turn lines; the next line is previewed below the current one.",
   "author": "Erdoğan Mete Yalçın",
   "entrypoint": "index.html",
-  "supported_languages": ["en", "tr"],
+  "supported_languages": ["en"],
   "permissions": []
 }
